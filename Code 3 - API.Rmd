@@ -1,0 +1,47 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Teknik Web Scrapping dengan Application Programming Interface (API) resmi
+
+**Kelebihan**
+
+1. Legal, resmi, sah
+
+2. Lebih mudah dan relatif cepat.
+
+**Kelemahan**
+
+1. Tidak semua website resmi menyediakan API.
+
+2. Kadang mesti mendaftar dulu sebagai developer.
+
+3. Biasanya data hasil scrape memiliki format .json yang jarang dikenal orang awam.
+
+
+**Library R**
+jsonlite, tidyverse
+
+
+## Scrapping Web Resmi Badan Pusat Statistik
+Studi Kasus: Press Release Inflasi Bulan Juli Tahun 2022
+```{r} 
+# Jika belum punya library jsonlite, install dulu dengan perintah berikut ini
+# install.packages("jsonlite, tidyverse")
+
+library(jsonlite)
+library(tidyverse)
+
+data = jsonlite::fromJSON("https://webapi.bps.go.id/v1/api/view/domain/0000/model/pressrelease/lang/ind/id/1863/key/0ae03f5adc1cfe6ebc7757af94bd382c/")
+```
+
+Kita bisa merapikan data tersebut dan menyimpan hasilnya di file teks
+```{r}
+glimpse(data)
+datarapi<- stringi::stri_list2matrix(data, byrow = TRUE, fill = "")
+cat(datarapi,file="5. BPS1.txt",append=TRUE)
+```

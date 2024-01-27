@@ -1,0 +1,115 @@
+---
+title: "Web Scraping Using R"
+author: "Andi Ardiansyah Nasir"
+date: "17/08/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Teknik Web Scrapping dengan Parsing HTML
+
+**Kelebihan**
+
+1. Bisa digunakan untuk mayoritas situs berita
+
+2. Proses pengumpulan data relatif cepat.
+
+**Kelemahan**
+
+1. Untuk website yang menggunakan login, prosesnya agak rumit.
+
+2. Harus menentukan target css dari website terlebih dahulu.
+
+3. Sulit digunakan pada website dinamis yang menggunakan javascript.
+
+
+**Library R**
+ralger atau rvest
+
+
+## 1. Scrapping Web Berita Online
+Studi Kasus: CNN
+
+```{r} 
+# Jika belum punya library ralger atau rvest, install dulu dengan perintah berikut ini
+# install.packages("ralger")
+# install.packages("rvest")
+
+url = "https://www.cnnindonesia.com/olahraga/20240127144003-178-1055138/megawati-ranking-3-kontes-ratu-servis-di-all-star-liga-korea"
+
+# memanggil library
+library("ralger")
+# mengambil judul artikel (baris pertama)
+judul = titles_scrap(url)[1]
+judul
+```
+Setelah berhasil mengambil judul, kita akan coba ambil konten artikelnya
+```{r}
+konten = paragraphs_scrap(url)
+konten
+```
+Berikutnya akan coba kita rapikan
+```{r}
+judul = trimws(judul[1])
+konten = paste(trimws(konten),collapse = "\n")
+cat(judul,konten)
+
+```
+
+Kita bisa simpan hasilnya di file teks
+```{r}
+cat(judul,file="1. CNNCom.txt",sep="\n")
+cat(konten,file="1. CNNCom.txt",append=TRUE)
+```
+
+
+## 2. Scrapping Web Klasemen Liga Inggris
+Studi Kasus: Tabel Klasemen Liga Iggris
+
+```{r}
+library(rvest)
+url = "https://id.wikipedia.org/wiki/Templat:Klasemen_Liga_Utama_Inggris_2023%E2%80%932024"
+html <- read_html(url)
+class_tabel <- ".wikitable"
+# Ekstrak dan baca tabel
+tabel_hasil <- html %>% html_nodes(class_tabel) %>% html_table()
+# Menampilkan tabel
+print(tabel_hasil)
+```
+Lalu bisa simpan ke dalam file Excel
+```{r}
+library(openxlsx)
+write.xlsx(tabel_hasil, "2. Klasemen Liga Inggris.xlsx")
+```
+
+## 3. Scrapping Web Iklan Online
+Studi Kasus: Apartemen OODLE
+
+```{r}
+library(rvest)
+
+url <- "https://apartments.oodle.com/1"
+page <- read_html(url)
+
+judul <- page %>%
+  html_nodes(".title-link") %>%
+  html_text()
+
+harga <- page %>%
+  html_nodes(".price") %>%
+  html_text()
+
+hasil <- data.frame(judul, harga)
+
+knitr::kable(hasil)
+
+```
+Lalu bisa simpan ke dalam file Excel
+
+```{r}
+library(openxlsx)
+write.xlsx(hasil, "3. OODLE Apartemen.xlsx")
+```

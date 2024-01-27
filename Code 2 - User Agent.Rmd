@@ -1,0 +1,60 @@
+---
+title: "Web Scraping Using R"
+author: "Andi Ardiansyah Nasir"
+date: "17/08/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## Teknik Web Scrapping dengan User Agent
+
+**Kelebihan**
+
+1. Lebih cepat dan bisa dilakukan untuk website yang sulit di-scraping
+
+2. Meniru perilaku pengguna di browser, misalnya Google Chrome, bisa diganti untuk browser lainnya.
+
+**Kelemahan**
+
+1. Belum tentu berlaku sama untuk setiap website.
+
+
+**Library R**
+rvest atau RSelenium
+
+
+## Scrapping GoFood
+Studi Kasus: Restoran di Makassar
+
+```{r} 
+library(rvest)
+
+url <- "https://gofood.co.id/en/makassar/tamalate-restaurants"
+
+# Ekstrak nama restoran
+nama_restoran <- read_html(url) %>% 
+  html_nodes(".mb-2.line-clamp-2.gf-label-m") %>% 
+  html_text()
+
+# Ekstrak jenis restoran
+jenis_restoran <- read_html(url) %>% 
+  html_nodes(".mb-2.text-gf-content-secondary.line-clamp-1.gf-body-xs") %>% 
+  html_text()
+
+# Gabungkan data ke dalam data frame
+data_restoran <- data.frame(nama_restoran, jenis_restoran)
+
+# Tampilkan data frame
+knitr::kable(data_restoran)
+
+
+```
+Lalu bisa simpan ke dalam file Excel
+
+```{r}
+library(openxlsx)
+write.xlsx(data.frame(nama_restoran,jenis_restoran), "4. GoFoodMakassar.xlsx")
+```
